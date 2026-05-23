@@ -42,14 +42,14 @@ bot.onText(/\/start/, (msg) => {
 
   const text =
     `👋 Assalomu alaykum, *${firstName}*!\n\n` +
-    `🌟 *OurGem* ga xush kelibsiz!\n\n` +
+    `🌟 *Ourgem* ga xush kelibsiz!\n\n` +
     `Quyidagi tugma orqali veb-ilovamizni oching 👇`;
 
   bot.sendMessage(chatId, text, {
     parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [
-        [{ text: "🌐 OurGem'ni ochish", web_app: { url: "https://ourgem.uz/" } }],
+        [{ text: "🌐 WebApp'ni ochish", web_app: { url: "https://ourgem.uz/" } }],
       ],
     },
   });
