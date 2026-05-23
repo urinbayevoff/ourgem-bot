@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OurGem — Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --border: #1e1e2e;
+      --accent: #7c6aff;
+      --accent2: #ff6a6a;
+      --green: #4ade80;
+      --text: #e8e8f0;
+      --muted: #5a5a7a;
+      --radius: 14px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Login ── */
+    #login-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      width: 100%;
+      gap: 0;
+    }
+
+    .login-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 0 0 80px #7c6aff18;
+      animation: fadeUp .5s ease both;
+    }
+
+    .login-logo {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .login-sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: .85rem;
+      font-family: 'DM Mono', monospace;
+      margin-top: -12px;
+    }
+
+    input[type="password"] {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 1rem;
+      width: 100%;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    input[type="password"]:focus { border-color: var(--accent); }
+
+    .btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 28px;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .2s, transform .15s;
+      width: 100%;
+    }
+
+    .btn:hover { opacity: .88; transform: translateY(-1px); }
+    .btn:active { transform: scale(.98); }
+
+    .btn.danger { background: var(--accent2); }
+    .btn.green { background: var(--green); color: #0a0a0f; }
+
+    #login-err {
+      color: var(--accent2);
+      font-size: .82rem;
+      font-family: 'DM Mono', monospace;
+      text-align: center;
+      min-height: 18px;
+    }
+
+    /* ── Dashboard ── */
+    #dashboard { display: none; width: 100%; max-width: 860px; padding: 40px 20px 80px; animation: fadeUp .5s ease both; }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand { font-size: 1.6rem; font-weight: 800; letter-spacing: -1px; }
+    .brand span { color: var(--accent); }
+
+    .logout-btn {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: .8rem;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .logout-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .stat-label {
+      font-size: .75rem;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .stat-num {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: .9rem;
+      resize: vertical;
+      min-height: 120px;
+      outline: none;
+      transition: border-color .2s;
+      margin-bottom: 14px;
+    }
+
+    textarea:focus { border-color: var(--accent); }
+
+    .markdown-hint {
+      font-size: .75rem;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      margin-bottom: 14px;
+    }
+
+    /* Result toast */
+    #broadcast-result {
+      margin-top: 14px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: .85rem;
+      display: none;
+    }
+
+    #broadcast-result.success { background: #4ade8018; border: 1px solid #4ade8040; color: var(--green); }
+    #broadcast-result.error { background: #ff6a6a18; border: 1px solid #ff6a6a40; color: var(--accent2); }
+
+    /* Users table */
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .85rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      color: var(--text);
+      font-size: .82rem;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #ffffff04; }
+
+    .username-link { color: var(--accent); text-decoration: none; }
+    .username-link:hover { text-decoration: underline; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: .7rem;
+      background: #7c6aff22;
+      color: var(--accent);
+      border: 1px solid #7c6aff44;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: .85rem;
+      padding: 32px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sending-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #0a0a0fcc;
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .sending-overlay.active { display: flex; }
+
+    .spinner {
+      width: 48px; height: 48px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .sending-text {
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">OurGem</div>
+    <div class="login-sub">// admin panel</div>
+    <input type="password" id="pwd-input" placeholder="Parolni kiriting..." />
+    <div id="login-err"></div>
+    <button class="btn" onclick="doLogin()">Kirish →</button>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard">
+  <header>
+    <div class="brand">Our<span>Gem</span> <span style="color:var(--muted);font-size:1rem;font-weight:400">Admin</span></div>
+    <button class="logout-btn" onclick="logout()">Chiqish ×</button>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Jami foydalanuvchi</div>
+      <div class="stat-num" id="stat-total">—</div>
+    </div>
+    <div class="stat-card" style="--accent:#4ade80">
+      <div class="stat-label">Bugun qo'shilgan</div>
+      <div class="stat-num" id="stat-today" style="color:var(--green)">—</div>
+    </div>
+  </div>
+
+  <!-- Broadcast -->
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Hammaga xabar yuborish</div>
+    <div class="markdown-hint">Markdown qo'llab-quvvatlanadi: *qalin*, _kursiv_, `kod`</div>
+    <textarea id="broadcast-msg" placeholder="Xabar matnini yozing..."></textarea>
+    <button class="btn" onclick="sendBroadcast()">📤 Hammaga yuborish</button>
+    <div id="broadcast-result"></div>
+  </div>
+
+  <!-- Users -->
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:var(--green)"></span> Foydalanuvchilar</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Ism</th>
+            <th>Username</th>
+            <th>Telegram ID</th>
+            <th>Qo'shilgan</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <tr><td colspan="5"><div class="empty-state">Yuklanmoqda...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Sending overlay -->
+<div class="sending-overlay" id="sending-overlay">
+  <div class="spinner"></div>
+  <div class="sending-text">Xabarlar yuborilmoqda...</div>
+</div>
+
+<script>
+  let adminPwd = '';
+
+  // ── Enter tugmasi
+  document.getElementById('pwd-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  async function doLogin() {
+    const pwd = document.getElementById('pwd-input').value.trim();
+    if (!pwd) return;
+    const res = await fetch('/api/stats', { headers: { 'x-admin-password': pwd } });
+    if (res.status === 401) {
+      document.getElementById('login-err').textContent = '❌ Parol noto\'g\'ri';
+      return;
+    }
+    adminPwd = pwd;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadData();
+  }
+
+  function logout() {
+    adminPwd = '';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('pwd-input').value = '';
+  }
+
+  async function loadData() {
+    // Stats
+    const statsRes = await fetch('/api/stats', { headers: { 'x-admin-password': adminPwd } });
+    const stats = await statsRes.json();
+    document.getElementById('stat-total').textContent = stats.total;
+    document.getElementById('stat-today').textContent = stats.today;
+
+    // Users
+    const usersRes = await fetch('/api/users', { headers: { 'x-admin-password': adminPwd } });
+    const data = await usersRes.json();
+    const tbody = document.getElementById('users-tbody');
+
+    if (!data.users.length) {
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">Hali foydalanuvchi yo'q</div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = data.users.slice().reverse().map((u, i) => `
+      <tr>
+        <td><span class="badge">${data.users.length - i}</span></td>
+        <td>${u.first_name} ${u.last_name}</td>
+        <td>${u.username ? `<a class="username-link" href="https://t.me/${u.username}" target="_blank">@${u.username}</a>` : '—'}</td>
+        <td style="color:var(--muted)">${u.id}</td>
+        <td style="color:var(--muted)">${new Date(u.joined_at).toLocaleDateString('uz')}</td>
+      </tr>
+    `).join('');
+  }
+
+  async function sendBroadcast() {
+    const msg = document.getElementById('broadcast-msg').value.trim();
+    const resultEl = document.getElementById('broadcast-result');
+
+    if (!msg) {
+      resultEl.className = 'error';
+      resultEl.style.display = 'block';
+      resultEl.textContent = '⚠️ Xabar bo\'sh bo\'lmasin';
+      return;
+    }
+
+    document.getElementById('sending-overlay').classList.add('active');
+
+    try {
+      const res = await fetch('/api/broadcast', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': adminPwd
+        },
+        body: JSON.stringify({ message: msg })
+      });
+
+      const data = await res.json();
+      resultEl.style.display = 'block';
+
+      if (res.ok) {
+        resultEl.className = 'success';
+        resultEl.textContent = `✅ Yuborildi: ${data.success} ta | ❌ Xato: ${data.failed} ta | Jami: ${data.total} ta`;
+        document.getElementById('broadcast-msg').value = '';
+      } else {
+        resultEl.className = 'error';
+        resultEl.textContent = '❌ Xatolik: ' + (data.error || 'Noma\'lum');
+      }
+    } catch (e) {
+      resultEl.className = 'error';
+      resultEl.style.display = 'block';
+      resultEl.textContent = '❌ Server bilan bog\'lanishda xato';
+    }
+
+    document.getElementById('sending-overlay').classList.remove('active');
+  }
+</script>
+</body>
+</html>
